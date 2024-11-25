@@ -1,0 +1,11 @@
+Encryption
+https://medium.com/@TechTalkWithAlex/cryptography-in-python-a-practical-example-to-code-2899b9bd176c
+https://cryptography.io/en/latest/hazmat/primitives/asymmetric/rsa/
+
+PyClasses
+https://docs.python.org/3/tutorial/classes.html
+
+
+Sockets
+https://realpython.com/python-sockets/
+https://stackoverflow.com/questions/48506460/python-simple-socket-client-server-using-asyncio

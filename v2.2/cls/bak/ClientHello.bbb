@@ -1,0 +1,43 @@
+from dataclasses import dataclass
+import os
+from netifaces import interfaces, ifaddresses, AF_INET
+
+class ClientHello:
+
+	def __init__(self, AppName, AppVersion, CertVersion, Random, UserHash, DHCert):
+		self.IP=self.ip4_addresses()        #15 bytes
+		self.AppName=""	#10 bytes
+		self.AppVersion="" #5 bytes
+		self.CertVersion=""   #10 bytes
+		self.Random=b''
+		self.UserHash=b''
+		self.DHCert=b''
+		
+
+	@property
+	def Random(self):
+		return self._random
+
+	@Random.setter
+	def Random(self, value):
+		print(f"Random new value: {value}")
+		self._random = value
+
+# The client sends a client hello message with the protocol version,
+# the client random, and a list of cipher suites.
+# ----=== PubK Sign Verification
+#IP:
+#AppName:
+#AppVersion:
+#CertVesion:
+#DHCert:
+#Random:
+#UserHash:
+#==== PubK encryption. Max 200 bytes
+	def ip4_addresses(self):
+	    ip = []
+	    for interface in interfaces():
+	        for link in ifaddresses(interface)[AF_INET]:
+	            ip.append(link['addr'])
+	    return ip
+

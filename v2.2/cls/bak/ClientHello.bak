@@ -1,0 +1,40 @@
+from dataclasses import dataclass
+
+
+
+def __init__(self):
+	self.ip_list=[]
+
+# The client sends a client hello message with the protocol version,
+# the client random, and a list of cipher suites.
+# ----=== PubK Sign Verification
+#IP:
+#AppName:
+#AppVersion:
+#CertVesion:
+#DHCert:
+#Random:
+#UserHash:
+#==== PubK encryption. Max 200 bytes
+def ip4_addresses(self):
+    self.ip_list = []
+    for interface in interfaces():
+        for link in ifaddresses(interface)[AF_INET]:
+            self.ip_list.append(link['addr'])
+    return self.ip_list
+
+@dataclass 
+class Client:
+	IP: str         #15 bytes
+	AppName: str	#10 bytes
+	AppVersion: str #5 bytes
+	CertVersion: str   #10 bytes
+	Random: bytes
+	UserHash: bytes
+
+
+@dataclass 
+class ClientHello:
+	Encrypted: Client         #15 bytes
+	DHCert: bytes  # 48 bytes????
+
