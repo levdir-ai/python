@@ -1,0 +1,54 @@
+import inspect
+import logging
+logger = logging.getLogger("main")
+
+class ProcessCmd:
+
+#function call class method by method name and args dictionary
+	def CallMethod(ClassList,CmdName,Args):
+		Cmd=""
+		if CmdName=="Cmd.ClassList" : 
+			logger.warning ("Cmd.ClassList called!")
+			return list(ClassList.keys())
+
+		if CmdName.count('.')==1 : 
+			ClassName,Method=CmdName.split('.')
+		elif CmdName.count('.')==2:
+			ClassName,Method,Cmd=CmdName.split('.')
+		else:
+			logger.error ("Bad command format:" +CmdName)
+			return "Error:Bad command format"
+
+		if not ClassName in ClassList: 
+			logger.error ("Class '"+ ClassName +"' not exist!")
+			return "Error:Class"
+
+#		if Method =="CmdList" : 
+#			logger.warning ("CmdList called! For class:" + ClassName)
+#			return list(filter(lambda x: x[:2]!='__', dir(ClassList[ClassName])))
+
+		if Cmd =="ParamList" or Method =="ParamList" : 
+			logger.warning ("ParamList called! For command:" + CmdName)
+			if Method in dir(ClassList[ClassName]): # Validate existence of the method
+				attribute_value = getattr(ClassList[ClassName], Method)
+				return list(filter(lambda x: x!="self" ,list(inspect.getfullargspec(attribute_value).args)))
+			else: 
+				logger.error ("ParamList:Class '"+type(ClassList[ClassName]).__name__+"' have no method '"+ Method +"'")
+				return "Error:Method"
+
+		if Method in dir(ClassList[ClassName]): # Validate existence of the method
+			attribute_value = getattr(ClassList[ClassName], Method)
+			t=()
+			for c in inspect.getfullargspec(attribute_value).args:
+				if (c!="self"):
+					if c in Args:
+						t=t+(Args[c],)
+					else:
+						logger.error("Not all required ARGS provided:"+c)
+						return "Error:ARGS"
+			return getattr(ClassList[ClassName], Method)(*t)
+		else:
+			logger.error ("Class '"+type(ClassList[ClassName]).__name__+"' have no method '"+ Method+"'")
+			return "Error:Method"
+
+

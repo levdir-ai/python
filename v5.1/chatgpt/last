@@ -1,0 +1,118 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def login():
+    username = entry_username.get()
+    password = entry_password.get()
+    if username == "admin" and password == "password":
+        messagebox.showinfo("Login Successful", "Welcome!")
+    else:
+        messagebox.showerror("Login Failed", "Invalid username or password")
+
+def fetch_classes():
+    return ['UserManager', 'Test']
+
+def fetch_commands(class_name):
+    commands = {
+        'Test': ['Cat', 'Cats', 'CmdList', 'Hello', 'ID', 'Info', 'Msg', 'Ping', 'Pong', 'SendFile', 'Test'],
+        'UserManager': ['AddUser', 'RemoveUser', 'ListUsers']
+    }
+    return commands.get(class_name, [])
+
+def fetch_params(class_name, command):
+    return ["param1", "param2"]
+
+global selected_class, CmdParam
+selected_class = None
+CmdParam = {}
+
+def on_class_selected(event):
+    global selected_class
+    try:
+        selected_class = class_listbox.get(class_listbox.curselection())
+        commands = fetch_commands(selected_class)
+        command_listbox.delete(0, tk.END)
+        for cmd in commands:
+            command_listbox.insert(tk.END, cmd)
+        param_frame.pack(fill=tk.BOTH, expand=True)  # Отображаем параметры сразу
+        for widget in param_frame.winfo_children():
+            widget.destroy()
+        response_text.delete("1.0", tk.END)  # Очищаем результаты
+    except:
+        pass
+
+def on_command_selected(event):
+    global CmdParam
+    if selected_class:
+        try:
+            selected_command = command_listbox.get(command_listbox.curselection())
+            CmdParam = {"Command": selected_command}  # Пересоздаем словарь
+            params = fetch_params(selected_class, selected_command)
+            for widget in param_frame.winfo_children():
+                widget.destroy()
+            tk.Label(param_frame, text="Parameters", font=("Arial", 10, "bold"), relief=tk.GROOVE).pack(fill=tk.X)
+            for param in params:
+                param_container = tk.Frame(param_frame)
+                param_container.pack(fill=tk.X)
+                tk.Label(param_container, text=param + ":").pack(side=tk.LEFT)
+                entry = tk.Entry(param_container)
+                entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+                entry.bind("<KeyRelease>", lambda e, p=param: update_cmd_param(p, e.widget.get()))
+        except:
+            pass
+
+def update_cmd_param(param, value):
+    CmdParam[param] = value
+
+def execute_command():
+    response_text.delete("1.0", tk.END)
+    response_text.insert(tk.END, f"Executing: {CmdParam}")
+
+# Создание главного окна
+root = tk.Tk()
+root.title("Command Selector")
+root.geometry("600x400")
+
+main_frame = tk.Frame(root)
+main_frame.pack(fill=tk.BOTH, expand=True)
+
+# Левая часть (Classes & Commands)
+left_frame = tk.Frame(main_frame)
+left_frame.pack(side=tk.LEFT, fill=tk.Y)
+
+label_classes = tk.Label(left_frame, text="Classes:")
+label_classes.pack()
+class_listbox = tk.Listbox(left_frame)
+class_listbox.pack()
+for cls in fetch_classes():
+    class_listbox.insert(tk.END, cls)
+class_listbox.bind("<<ListboxSelect>>", on_class_selected)
+
+label_commands = tk.Label(left_frame, text="Commands:")
+label_commands.pack()
+command_listbox = tk.Listbox(left_frame)
+command_listbox.pack()
+command_listbox.bind("<<ListboxSelect>>", on_command_selected)
+
+# Правая часть (Parameters & Responses)
+right_frame = tk.Frame(main_frame)
+right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+
+# Верхняя половина (Parameters)
+param_frame = tk.LabelFrame(right_frame, text="Parameters")
+param_frame.pack(fill=tk.BOTH, expand=True)
+
+# Нижняя половина (Command Response)
+response_frame = tk.Frame(right_frame, height=200)
+response_frame.pack(fill=tk.BOTH, expand=True)
+
+response_label = tk.Label(response_frame, text="Command Response", font=("Arial", 10, "bold"))
+response_label.pack()
+response_text = tk.Text(response_frame, height=5)
+response_text.pack(fill=tk.BOTH, expand=True)
+
+execute_button = tk.Button(response_frame, text="Execute", command=execute_command)
+execute_button.pack()
+
+# Запуск GUI
+root.mainloop()
